@@ -1,8 +1,7 @@
-import NextAuth from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import TwitterProvider from "next-auth/providers/twitter";
 
-export const authOptions = {
-  // Configure one or more authentication providers
+export const authOptions: AuthOptions = {
   providers: [
     TwitterProvider({
       clientId: process.env.TWITTER_CLIENT_ID ?? "",
@@ -10,5 +9,13 @@ export const authOptions = {
       version: "2.0",
     }),
   ],
+  // include user ID in session object
+  callbacks: {
+    async session({ session, token }) {
+      session.user.id = token.sub;
+      return session;
+    },
+  },
 };
+
 export default NextAuth(authOptions);
